@@ -34,7 +34,7 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": ["src/global.scss", "src/tailwind.css"],
             "scripts": []
           },
           "configurations": {
@@ -120,7 +120,8 @@
   "cli": {
     "schematicCollections": [
       "@ionic/angular-toolkit"
-    ]
+    ],
+    "analytics": "eda9de50-5211-4b30-9969-369d26f4eba7"
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {

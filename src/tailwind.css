@@ -1,0 +1,39 @@
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --animate-slide-in: slide-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-rise: rise 0.8s 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-load: load 2.4s linear both;
+--animate-float: float 9s ease-in-out infinite alternate;
+
+  @keyframes float {
+    from { translate: 0 0; }
+    to   { translate: 0 -18px; }
+  }
+  @keyframes slide-in { from { transform: translateX(120%); } to { transform: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  @keyframes load { from { width: 0; } to { width: 100%; } }
+}
+
+/* Thème clair : blanc + rouge */
+:root {
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+  --accent: #e30613;
+
+  --ion-background-color: var(--bg);
+  --ion-text-color: var(--fg);
+  --ion-color-primary: var(--accent);
+}
+
+/* Thème sombre : noir + rouge */
+.dark {
+  --bg: #0a0a0a;
+  --fg: #ffffff;
+  --accent: #ff1e2d;
+}

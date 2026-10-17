@@ -1,0 +1,47 @@
+<ion-content [fullscreen]="true" class="[--background:var(--bg)]">
+  <div class="absolute inset-0 overflow-hidden bg-[var(--bg)] font-sans text-[var(--fg)]">
+<app-bg-shadows />
+    <!-- Geometric shapes -->
+    <div class="absolute -right-20 top-24 size-72 animate-slide-in rounded-full bg-[var(--accent)]"></div>
+    <div class="absolute right-24 top-64 size-24 animate-slide-in bg-[var(--fg)]"></div>
+
+    <div class="relative flex h-full flex-col justify-between px-6 pb-10 pt-[max(2.5rem,env(safe-area-inset-top))]">
+
+      <!-- Header -->
+      <header class="flex items-start justify-between border-t-[6px] border-[var(--fg)] pt-2 text-[11px] font-bold uppercase tracking-[0.2em]">
+        <span>Movie Match</span>
+        <span class="text-right leading-tight">Nº 01<br />2026</span>
+      </header>
+
+      <!-- Title + index -->
+      <main class="animate-rise">
+        <h1 class="text-[4.5rem] font-black uppercase leading-[0.8] tracking-tighter">
+          Movie<br />Match<span class="text-[var(--accent)]">.</span>
+        </h1>
+
+        <ul class="mt-10 w-52 text-xs font-bold uppercase tracking-widest">
+          <li class="flex justify-between border-t-2 border-[var(--fg)] py-2">
+            <span>01</span><span>Films</span>
+          </li>
+          <li class="flex justify-between border-t-2 border-[var(--fg)] py-2">
+            <span>02</span><span>Favoris</span>
+          </li>
+          <li class="flex justify-between border-y-2 border-[var(--fg)] py-2">
+            <span>03</span><span>Affinités</span>
+          </li>
+        </ul>
+      </main>
+
+      <!-- Loader -->
+      <footer>
+        <div class="mb-2 flex items-end justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-[0.2em]">Chargement</span>
+          <span class="text-4xl font-black leading-none tabular-nums">{{ progress() }}%</span>
+        </div>
+        <div class="h-2 bg-[var(--fg)]/15">
+          <div class="h-full bg-[var(--accent)]" [style.width.%]="progress()"></div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</ion-content>

@@ -1,20 +1,85 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="[--background:var(--bg)]">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="relative min-h-full bg-[var(--bg)] px-6 pb-28 pt-[max(2.5rem,env(safe-area-inset-top))] font-sans text-[var(--fg)]">
+  <app-bg-shadows />  
+<header class="relative flex items-start justify-between border-t-[6px] border-[var(--fg)] pt-2 text-[11px] font-bold uppercase tracking-[0.2em]">
+  <span>Movie Match</span>
+  <span>{{ favorites.ids().length }} favoris</span>
+</header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <!-- Title -->
+    <h1 class="mt-6 text-[4rem] font-black uppercase leading-[0.8] tracking-tighter">
+      Films<span class="text-[var(--accent)]">.</span>
+    </h1>
+    @if (auth.currentUser()?.role === 'admin' && movieService.usingSample()) {
+  <button type="button" (click)="movieService.importToFirestore()"
+    class="mt-4 border-2 border-[var(--accent)] px-3 py-2 text-[11px] font-black uppercase tracking-widest text-[var(--accent)]">
+    Importer dans Firestore
+  </button>
+}
+    <p class="mt-3 text-xs font-bold uppercase tracking-widest">
+      {{ filtered().length }} titres · {{ favorites.ids().length }} favoris
+    </p>
+
+    <!-- Search -->
+    <input
+      type="text"
+      placeholder="RECHERCHER"
+      [value]="query()"
+      (input)="query.set($any($event.target).value)"
+      class="mt-8 w-full border-0 border-b-4 border-[var(--fg)] bg-transparent py-3 text-lg font-black uppercase tracking-tight text-[var(--fg)] placeholder:text-[var(--fg)]/30 focus:border-[var(--accent)] focus:outline-none"
+    />
+
+    @if (movieService.usingSample()) {
+      <p class="mt-3 text-[11px] font-bold uppercase tracking-widest text-[var(--accent)]">
+        Données de démonstration
+      </p>
+    }
+
+    <!-- Loading -->
+    @if (movieService.loading()) {
+      <p class="mt-10 text-sm font-black uppercase tracking-widest">Chargement…</p>
+    }
+
+    <!-- Grid -->
+    <section class="mt-8 grid grid-cols-2 gap-x-4 gap-y-8">
+      @for (m of filtered(); track m.id; let i = $index) {
+        <article class="border-t-2 border-[var(--fg)] pt-2">
+
+          <div class="relative aspect-[2/3] overflow-hidden bg-[var(--fg)]/10">
+            @if (m.poster) {
+              <img [src]="m.poster" [alt]="m.title" loading="lazy" class="size-full object-cover" />
+            } @else {
+              <div class="absolute -right-6 bottom-4 size-24 rounded-full bg-[var(--accent)]"></div>
+              <div class="absolute bottom-0 left-0 size-12 bg-[var(--fg)]"></div>
+            }
+            <span class="absolute left-0 top-0 bg-[var(--bg)] px-2 py-1 text-xs font-black tabular-nums">
+              {{ pad(i + 1) }}
+            </span>
+          </div>
+
+          <h2 class="mt-2 text-base font-black uppercase leading-[0.95] tracking-tight">{{ m.title }}</h2>
+          <p class="mt-1 text-[11px] font-bold uppercase tracking-widest">
+            {{ m.year }} · {{ m.rating }}
+          </p>
+
+          <button
+            type="button"
+            (click)="favorites.toggle(m.id)"
+            class="mt-2 w-full border-2 border-[var(--fg)] py-2 text-[11px] font-black uppercase tracking-[0.2em]"
+            [class]="favorites.has(m.id) ? 'bg-[var(--accent)] border-[var(--accent)] text-white' : 'bg-transparent text-[var(--fg)]'"
+          >
+            {{ favorites.has(m.id) ? 'Enregistré' : '+ Favori' }}
+          </button>
+        </article>
+      } @empty {
+        @if (!movieService.loading()) {
+          <p class="col-span-2 text-sm font-black uppercase tracking-widest">Aucun résultat.</p>
+        }
+      }
+    </section>
   </div>
+
+  <!-- Bottom nav -->
+  <app-bottom-nav slot="fixed" active="/home" />
 </ion-content>
