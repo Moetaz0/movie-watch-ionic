@@ -37,6 +37,33 @@ export const routes: Routes = [
   path: 'privacy',
   loadComponent: () => import('./pages/privacy/privacy.page').then((m) => m.PrivacyPage),
 },
+{
+  path: 'favorites',
+  canActivate: [authGuard],
+  loadComponent: () => import('./pages/favorites/favorites.page').then((m) => m.FavoritesPage),
+},
+{
+  path: 'match',
+  canActivate: [authGuard],
+  loadComponent: () => import('./pages/match/match.page').then((m) => m.MatchPage),
+},
+{
+  path: 'forgot-password',
+  loadComponent: () =>
+    import('./pages/forgot-password/forgot-password.page').then((m) => m.ForgotPasswordPage),
+},
+{
+  path: 'edit-profile',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./pages/edit-profile/edit-profile.page').then((m) => m.EditProfilePage),
+},
+{
+  path: 'movie/:id',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./pages/movie-detail/movie-detail.page').then((m) => m.MovieDetailPage),
+},
 ];
 @NgModule({
   imports: [

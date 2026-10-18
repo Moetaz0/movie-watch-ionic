@@ -1,0 +1,80 @@
+<ion-content [fullscreen]="true" class="[--background:var(--bg)]">
+  <div class="relative min-h-full bg-[var(--bg)] px-6 pb-16 pt-[max(2.5rem,env(safe-area-inset-top))] font-sans text-[var(--fg)]">
+    <app-bg-shadows />
+    <app-page-header title="Modifier" />
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="relative mt-10 space-y-7">
+
+      <!-- Photo -->
+      <div class="flex items-end gap-4">
+        <button type="button" (click)="changePhoto()"
+          class="relative size-32 shrink-0 overflow-hidden border-4 border-[var(--fg)] bg-[var(--fg)]/10">
+          @if (photo()) {
+            <img [src]="photo()" alt="Ma photo" class="size-full object-cover" />
+          } @else {
+            <div class="absolute -right-4 bottom-3 size-16 rounded-full bg-[var(--accent)]"></div>
+            <div class="absolute bottom-0 left-0 size-8 bg-[var(--fg)]"></div>
+          }
+        </button>
+        <button type="button" (click)="changePhoto()"
+          class="text-xs font-black uppercase tracking-[0.2em] underline decoration-2 underline-offset-4">
+          Changer la photo
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <label class="block">
+          <span class="text-[11px] font-bold uppercase tracking-[0.2em]">Prénom</span>
+          <input type="text" formControlName="firstName"
+            class="mt-1 w-full border-0 border-b-4 bg-transparent py-2 text-lg font-black tracking-tight text-[var(--fg)] focus:border-[var(--accent)] focus:outline-none"
+            [class]="invalid('firstName') ? 'border-[var(--accent)]' : 'border-[var(--fg)]'" />
+        </label>
+        <label class="block">
+          <span class="text-[11px] font-bold uppercase tracking-[0.2em]">Nom</span>
+          <input type="text" formControlName="lastName"
+            class="mt-1 w-full border-0 border-b-4 bg-transparent py-2 text-lg font-black tracking-tight text-[var(--fg)] focus:border-[var(--accent)] focus:outline-none"
+            [class]="invalid('lastName') ? 'border-[var(--accent)]' : 'border-[var(--fg)]'" />
+        </label>
+      </div>
+
+      <label class="block">
+        <span class="text-[11px] font-bold uppercase tracking-[0.2em]">Âge</span>
+        <input type="number" formControlName="age" inputmode="numeric"
+          class="mt-1 w-full border-0 border-b-4 bg-transparent py-2 text-lg font-black tracking-tight text-[var(--fg)] focus:border-[var(--accent)] focus:outline-none"
+          [class]="invalid('age') ? 'border-[var(--accent)]' : 'border-[var(--fg)]'" />
+        @if (invalid('age')) {
+          <span class="mt-1 block text-[11px] font-bold uppercase tracking-widest text-[var(--accent)]">Âge entre 10 et 120</span>
+        }
+      </label>
+
+      <div>
+        <span class="text-[11px] font-bold uppercase tracking-[0.2em]">Email</span>
+        <p class="mt-1 border-b-4 border-[var(--fg)]/30 py-2 text-lg font-black tracking-tight opacity-60">{{ email }}</p>
+      </div>
+
+      @if (error()) {
+        <p class="border-l-4 border-[var(--accent)] pl-3 text-xs font-bold uppercase tracking-widest text-[var(--accent)]">
+          {{ error() }}
+        </p>
+      }
+
+      <button type="submit" [disabled]="busy()"
+        class="w-full bg-[var(--accent)] py-4 text-sm font-black uppercase tracking-[0.2em] text-white disabled:opacity-50">
+        {{ busy() ? 'Enregistrement…' : 'Enregistrer' }}
+      </button>
+    </form>
+
+    <!-- Password -->
+    <h2 class="relative mt-12 border-t-2 border-[var(--fg)] pt-2 text-[11px] font-black uppercase tracking-[0.2em]">
+      Mot de passe
+    </h2>
+    <p class="relative mt-2 text-sm font-medium">Recevez un email pour choisir un nouveau mot de passe.</p>
+    <button type="button" (click)="sendReset()" [disabled]="resetBusy()"
+      class="relative mt-4 border-2 border-[var(--fg)] px-4 py-3 text-[11px] font-black uppercase tracking-[0.2em] disabled:opacity-50">
+      {{ resetBusy() ? 'Envoi…' : "Recevoir l'email" }}
+    </button>
+    @if (resetMsg()) {
+      <p class="relative mt-3 text-xs font-bold uppercase tracking-widest text-[var(--accent)]">{{ resetMsg() }}</p>
+    }
+  </div>
+</ion-content>

@@ -1,45 +1,13 @@
-import { Component } from '@angular/core';
+import { Component , inject } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { BgShadowsComponent } from '../../components/bg-shadows/bg-shadows.component';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
-
+import { NavController } from '@ionic/angular';
 @Component({
   selector: 'app-license',
   imports: [IonContent, BgShadowsComponent, PageHeaderComponent],
-  template: `
-    <ion-content [fullscreen]="true" class="[--background:var(--bg)]">
-      <div class="relative min-h-full bg-[var(--bg)] px-6 pb-16 pt-[max(2.5rem,env(safe-area-inset-top))] font-sans text-[var(--fg)]">
-        <app-bg-shadows />
-        <app-page-header title="Licence" />
+  templateUrl: './license.page.html',
 
-        <h2 class="relative mt-10 border-t-2 border-[var(--fg)] pt-2 text-[11px] font-black uppercase tracking-[0.2em]">
-          Movie Match · Licence MIT
-        </h2>
-        <p class="relative mt-3 text-sm font-bold">{{ copyright }}</p>
-        <p class="relative mt-3 text-xs leading-relaxed whitespace-pre-line">{{ mit }}</p>
-
-        <h2 class="relative mt-10 border-t-2 border-[var(--fg)] pt-2 text-[11px] font-black uppercase tracking-[0.2em]">
-          Bibliothèques tierces
-        </h2>
-        <ul class="relative mt-2">
-          @for (l of libs; track l.name) {
-            <li class="flex items-baseline justify-between border-b border-[var(--fg)]/30 py-3">
-              <span class="text-base font-black uppercase tracking-tight">{{ l.name }}</span>
-              <span class="text-[11px] font-bold uppercase tracking-widest opacity-60">{{ l.license }}</span>
-            </li>
-          }
-        </ul>
-
-        <h2 class="relative mt-10 border-t-2 border-[var(--fg)] pt-2 text-[11px] font-black uppercase tracking-[0.2em]">
-          Données des films
-        </h2>
-        <p class="relative mt-3 text-sm font-medium leading-relaxed">
-          Ce produit utilise l’API TMDB mais n’est ni approuvé ni certifié par TMDB. Les affiches et
-          informations de films appartiennent à leurs ayants droit respectifs.
-        </p>
-      </div>
-    </ion-content>
-  `,
 })
 export class LicensePage {
   copyright = 'Copyright (c) 2026 Équipe Movie Match'; // mettez vos noms

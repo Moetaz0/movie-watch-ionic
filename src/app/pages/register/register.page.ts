@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { Capacitor } from '@capacitor/core';
 import { BgShadowsComponent } from '../../components/bg-shadows/bg-shadows.component';
 type Field = 'firstName' | 'lastName' | 'age' | 'email' | 'password';
-
+import { NavController } from '@ionic/angular';
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
@@ -17,7 +17,7 @@ export class RegisterPage {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
-
+  private nav = inject(NavController);
   photo = signal<string | null>(null);
   photoMissing = signal(false);
   error = signal('');
@@ -90,7 +90,7 @@ private resize(dataUrl: string) {
     this.busy.set(true);
     try {
       await this.auth.register({ ...this.form.getRawValue(), photo: this.photo() });
-      this.router.navigateByUrl('/home', { replaceUrl: true });
+      this.nav.navigateRoot('/home', { replaceUrl: true });
     } catch (e: any) {
       this.error.set(e.message ?? "Erreur d'inscription.");
     } finally {

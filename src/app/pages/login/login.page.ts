@@ -4,13 +4,14 @@ import { Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
 import { BgShadowsComponent } from '../../components/bg-shadows/bg-shadows.component';
-
+import { NavController } from '@ionic/angular';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   imports: [IonContent, ReactiveFormsModule, RouterLink , BgShadowsComponent],
 })
 export class LoginPage {
+  private nav = inject(NavController);
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
@@ -38,7 +39,7 @@ export class LoginPage {
     try {
       const { email, password } = this.form.getRawValue();
       await this.auth.login(email, password);
-      this.router.navigateByUrl('/home', { replaceUrl: true });
+      this.nav.navigateRoot('/home', { replaceUrl: true });
     } catch (e: any) {
       this.error.set(e.message ?? 'Erreur de connexion.');
     } finally {

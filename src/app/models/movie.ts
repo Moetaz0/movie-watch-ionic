@@ -4,4 +4,5 @@ export interface Movie {
   year: string;
   rating: number;
   poster: string | null;
+  overview?: string;
 }

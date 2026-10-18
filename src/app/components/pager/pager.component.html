@@ -1,0 +1,29 @@
+@if (totalPages() > 1) {
+  <nav class="flex items-center justify-between border-t-4 border-[var(--fg)] pt-3" aria-label="Pagination">
+    <button type="button" (click)="go(page() - 1)" [disabled]="page() === 1"
+      class="text-[11px] font-black uppercase tracking-[0.2em] disabled:opacity-30">
+      ← Préc.
+    </button>
+
+    <ul class="flex items-center gap-1">
+      @for (n of items(); track $index) {
+        @if (n === null) {
+          <li class="px-1 text-xs font-black opacity-50">…</li>
+        } @else {
+          <li>
+            <button type="button" (click)="go(n)"
+              class="min-w-8 px-2 py-1 text-xs font-black tabular-nums"
+              [class]="n === page() ? 'bg-[var(--accent)] text-white' : 'text-[var(--fg)]'">
+              {{ n }}
+            </button>
+          </li>
+        }
+      }
+    </ul>
+
+    <button type="button" (click)="go(page() + 1)" [disabled]="page() === totalPages()"
+      class="text-[11px] font-black uppercase tracking-[0.2em] disabled:opacity-30">
+      Suiv. →
+    </button>
+  </nav>
+}

@@ -1,0 +1,45 @@
+<ion-content [fullscreen]="true" class="[--background:var(--bg)]">
+  <div class="relative min-h-full bg-[var(--bg)] px-6 pb-16 pt-[max(2.5rem,env(safe-area-inset-top))] font-sans text-[var(--fg)]">
+    <app-bg-shadows />
+    <app-page-header title="Film" />
+
+    @if (movie(); as m) {
+      <section class="relative mt-8">
+        <div class="relative mx-auto aspect-[2/3] w-3/5 max-w-xs overflow-hidden border-4 border-[var(--fg)] bg-[var(--fg)]/10">
+          @if (m.poster) {
+            <img [src]="m.poster" [alt]="m.title" class="size-full object-cover" />
+          } @else {
+            <div class="absolute -right-8 bottom-6 size-36 rounded-full bg-[var(--accent)]"></div>
+            <div class="absolute bottom-0 left-0 size-16 bg-[var(--fg)]"></div>
+          }
+        </div>
+
+        <h2 class="mt-6 text-[2.5rem] font-black uppercase leading-[0.85] tracking-tighter">
+          {{ m.title }}<span class="text-[var(--accent)]">.</span>
+        </h2>
+        <p class="mt-3 text-xs font-bold uppercase tracking-widest">{{ m.year }} · {{ m.rating }} / 10</p>
+
+        <button type="button" (click)="toggle()"
+          class="mt-6 w-full border-2 py-4 text-sm font-black uppercase tracking-[0.2em]"
+          [class]="favorites.has(m.id) ? 'border-[var(--accent)] bg-[var(--accent)] text-white' : 'border-[var(--fg)] bg-transparent text-[var(--fg)]'">
+          {{ favorites.has(m.id) ? 'Dans mes favoris' : '+ Ajouter aux favoris' }}
+        </button>
+
+        @if (fans() !== null) {
+          <p class="mt-6 border-t-2 border-[var(--fg)] pt-3 text-[11px] font-black uppercase tracking-[0.2em]">
+            {{ fans() }} {{ fans() === 1 ? "utilisateur l'a" : "utilisateurs l'ont" }} en favori
+          </p>
+        }
+
+        @if (m.overview) {
+          <h3 class="mt-8 border-t-2 border-[var(--fg)] pt-2 text-[11px] font-black uppercase tracking-[0.2em]">Synopsis</h3>
+          <p class="mt-2 text-sm font-medium leading-relaxed">{{ m.overview }}</p>
+        }
+      </section>
+    } @else if (!movieService.loading()) {
+      <p class="relative mt-10 text-lg font-black uppercase tracking-tight">Film introuvable.</p>
+    } @else {
+      <p class="relative mt-10 text-sm font-black uppercase tracking-widest">Chargement…</p>
+    }
+  </div>
+</ion-content>

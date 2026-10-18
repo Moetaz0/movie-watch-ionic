@@ -26,7 +26,7 @@
       type="text"
       placeholder="RECHERCHER"
       [value]="query()"
-      (input)="query.set($any($event.target).value)"
+      (input)="onSearch($any($event.target).value)"
       class="mt-8 w-full border-0 border-b-4 border-[var(--fg)] bg-transparent py-3 text-lg font-black uppercase tracking-tight text-[var(--fg)] placeholder:text-[var(--fg)]/30 focus:border-[var(--accent)] focus:outline-none"
     />
 
@@ -43,9 +43,9 @@
 
     <!-- Grid -->
     <section class="mt-8 grid grid-cols-2 gap-x-4 gap-y-8">
-      @for (m of filtered(); track m.id; let i = $index) {
+      @for (m of paged(); track m.id; let i = $index) {
         <article class="border-t-2 border-[var(--fg)] pt-2">
-
+          <a [routerLink]="['/movie', m.id]" class="block relative">
           <div class="relative aspect-[2/3] overflow-hidden bg-[var(--fg)]/10">
             @if (m.poster) {
               <img [src]="m.poster" [alt]="m.title" loading="lazy" class="size-full object-cover" />
@@ -54,7 +54,7 @@
               <div class="absolute bottom-0 left-0 size-12 bg-[var(--fg)]"></div>
             }
             <span class="absolute left-0 top-0 bg-[var(--bg)] px-2 py-1 text-xs font-black tabular-nums">
-              {{ pad(i + 1) }}
+              {{ pad(offset() + i + 1) }}
             </span>
           </div>
 
@@ -62,7 +62,7 @@
           <p class="mt-1 text-[11px] font-bold uppercase tracking-widest">
             {{ m.year }} · {{ m.rating }}
           </p>
-
+          </a>
           <button
             type="button"
             (click)="favorites.toggle(m.id)"
@@ -78,6 +78,10 @@
         }
       }
     </section>
+    <app-pager class="relative mt-10 block"
+  [page]="currentPage()"
+  [totalPages]="totalPages()"
+  (pageChange)="goTo($event)" />
   </div>
 
   <!-- Bottom nav -->

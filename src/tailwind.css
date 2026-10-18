@@ -1,6 +1,6 @@
 @import "tailwindcss/theme.css";
 @import "tailwindcss/utilities.css";
-
+@layer theme, base, components, utilities;
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -33,7 +33,40 @@
 
 /* Thème sombre : noir + rouge */
 .dark {
-  --bg: #0a0a0a;
+  --bg: #393939;
   --fg: #ffffff;
   --accent: #ff1e2d;
+}
+html, body, ion-app {
+  background: var(--bg);
+}
+/* Native controls follow the theme */
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
+
+/* Base resets, kept inside a layer so Tailwind utilities (bg-*, text-*, border-*) still win */
+@layer base {
+  button {
+    background-color: transparent;
+    color: inherit;
+    font: inherit;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  input, select, textarea {
+    background-color: transparent;
+    color: inherit;
+    font: inherit;
+    border-radius: 0;
+  }
+  a { color: inherit; text-decoration: none; }
+}
+
+/* Browser autofill paints inputs white or yellow */
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--fg);
+  box-shadow: 0 0 0 1000px var(--bg) inset;
+  caret-color: var(--fg);
 }

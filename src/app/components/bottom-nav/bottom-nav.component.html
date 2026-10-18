@@ -1,0 +1,12 @@
+<nav class="grid grid-cols-4 pb-[env(safe-area-inset-bottom)] text-[11px] font-black uppercase tracking-widest">
+  @for (t of tabs; track t.label) {
+    <button
+      type="button"
+      (click)="go(t.link)"
+      class="border-t-4 py-4 text-center uppercase"
+      [class]="t.link === active() ? 'border-[var(--accent)]' : 'border-[var(--fg)] opacity-40'"
+    >
+      {{ t.label }}
+    </button>
+  }
+</nav>

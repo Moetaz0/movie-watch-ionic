@@ -1,0 +1,97 @@
+<ion-content [fullscreen]="true" class="[--background:var(--bg)]">
+      <div class="relative min-h-full bg-[var(--bg)] px-6 pb-32 pt-[max(2.5rem,env(safe-area-inset-top))] font-sans text-[var(--fg)]">
+        <app-bg-shadows />
+
+        <header class="relative flex justify-between border-t-[6px] border-[var(--fg)] pt-2 text-[11px] font-bold uppercase tracking-[0.2em]">
+          <span>Movie Match</span>
+          <span>Seuil {{ threshold }}%</span>
+        </header>
+
+        <h1 class="relative mt-6 text-[4rem] font-black uppercase leading-[0.8] tracking-tighter">
+          Match<span class="text-[var(--accent)]">.</span>
+        </h1>
+        <p class="relative mt-3 text-xs font-bold uppercase tracking-widest">
+          {{ matchService.matches().length }} {{ matchService.matches().length > 1 ? 'affinités' : 'affinité' }}
+          · {{ matchService.compared() }} comparés
+        </p>
+
+        <button type="button" (click)="matchService.compute()"
+          class="relative mt-4 text-[11px] font-black uppercase tracking-[0.2em] underline decoration-2 underline-offset-4">
+          Actualiser
+        </button>
+
+        @if (matchService.loading()) {
+          <p class="relative mt-10 text-sm font-black uppercase tracking-widest">Calcul en cours…</p>
+        }
+
+        @if (matchService.error()) {
+          <p class="relative mt-8 border-l-4 border-[var(--accent)] pl-3 text-xs font-bold uppercase tracking-widest text-[var(--accent)]">
+            {{ matchService.error() }}
+          </p>
+        }
+
+        @if (!matchService.loading() && !matchService.error()) {
+          @if (favorites.ids().length === 0) {
+            <section class="relative mt-10 border-t-2 border-[var(--fg)] pt-4">
+              <p class="text-lg font-black uppercase leading-tight tracking-tight">Ajoutez d'abord des favoris.</p>
+              <p class="mt-2 text-sm font-medium">Le matching compare votre playlist à celle des autres utilisateurs.</p>
+              <a routerLink="/home"
+                class="mt-6 inline-block bg-[var(--accent)] px-6 py-3 text-xs font-black uppercase tracking-[0.2em] text-white">
+                Parcourir les films
+              </a>
+            </section>
+          } @else if (matchService.matches().length === 0) {
+            <section class="relative mt-10 border-t-2 border-[var(--fg)] pt-4">
+              <p class="text-lg font-black uppercase leading-tight tracking-tight">Aucune affinité pour l'instant.</p>
+              <p class="mt-2 text-sm font-medium">
+                Il faut au moins {{ threshold }}% de films en commun. Ajoutez des favoris ou revenez plus tard.
+              </p>
+            </section>
+          }
+        }
+
+        <section class="relative mt-8 space-y-8">
+          @for (m of matchService.matches(); track m.user.id; let i = $index) {
+            <article class="border-t-4 border-[var(--fg)] pt-3">
+              <div class="flex items-end gap-4">
+                <div class="relative size-24 shrink-0 overflow-hidden border-4 border-[var(--fg)] bg-[var(--fg)]/10">
+                  @if (m.user.photo) {
+                    <img [src]="m.user.photo" [alt]="m.user.firstName" class="size-full object-cover" />
+                  } @else {
+                    <div class="absolute -right-3 bottom-2 size-12 rounded-full bg-[var(--accent)]"></div>
+                    <div class="absolute bottom-0 left-0 size-6 bg-[var(--fg)]"></div>
+                  }
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-[11px] font-black tabular-nums text-[var(--accent)]">{{ pad(i + 1) }}</p>
+                  <h2 class="text-xl font-black uppercase leading-[0.9] tracking-tight">
+                    {{ m.user.firstName }}<br />{{ m.user.lastName }}
+                  </h2>
+                  <p class="mt-1 text-[11px] font-bold uppercase tracking-widest">{{ m.user.age }} ans</p>
+                </div>
+                <p class="text-5xl font-black leading-none tracking-tighter tabular-nums">
+                  {{ rounded(m.rate) }}<span class="text-xl text-[var(--accent)]">%</span>
+                </p>
+              </div>
+
+              <div class="mt-3 h-2 bg-[var(--fg)]/15">
+                <div class="h-full bg-[var(--accent)]" [style.width.%]="m.rate"></div>
+              </div>
+
+              <p class="mt-3 text-[11px] font-black uppercase tracking-[0.2em]">
+                {{ m.common.length }} {{ m.common.length > 1 ? 'films en commun' : 'film en commun' }}
+              </p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                @for (id of m.common; track id) {
+                  <span class="border-2 border-[var(--fg)] px-2 py-1 text-[11px] font-black uppercase tracking-widest">
+                    {{ title(id) }}
+                  </span>
+                }
+              </div>
+            </article>
+          }
+        </section>
+      </div>
+
+      <app-bottom-nav slot="fixed" active="/match" />
+    </ion-content>

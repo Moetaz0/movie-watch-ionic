@@ -19,6 +19,7 @@ export interface AppUser {
   role: 'user' | 'admin';
   active: boolean;
   favoriteMovieIds: number[];
+  theme?: 'light' | 'dark';
 }
 
 export interface RegisterData {
@@ -70,6 +71,7 @@ export class AuthService {
         role: 'user',
         active: true,
         favoriteMovieIds: [],
+        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
       };
       await setDoc(doc(db, 'users', cred.user.uid), profile);
       this.currentUser.set(profile);

@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { IonContent, NavController } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
 import { BgShadowsComponent } from '../../components/bg-shadows/bg-shadows.component';
 
@@ -13,7 +12,7 @@ const STEP_MS = 30;
   imports: [IonContent, BgShadowsComponent],
 })
 export class SplashPage implements OnInit, OnDestroy {
-  private router = inject(Router);
+  private nav = inject(NavController);
   private auth = inject(AuthService);
 
   progress = signal(0);
@@ -34,10 +33,8 @@ export class SplashPage implements OnInit, OnDestroy {
   }
 
   private async leave() {
-    await this.auth.ready; // attend Firebase si ce n'est pas déjà fait
-    this.router.navigateByUrl(this.auth.currentUser() ? '/home' : '/login', {
-      replaceUrl: true,
-    });
+    await this.auth.ready;
+    this.nav.navigateRoot(this.auth.currentUser() ? '/home' : '/login');
   }
 
   ngOnDestroy() {

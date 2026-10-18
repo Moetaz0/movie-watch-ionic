@@ -48,7 +48,34 @@ export class MovieService {
     await batch.commit();
     this.usingSample.set(false);
   }
+private async fetchTmdb(pages = 5): Promise<Movie[]> {
+  const requests = Array.from({ length: pages }, (_, i) =>
+    fetch(
+      `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${i + 1}`
+    ).then((r) => {
+      if (!r.ok) throw new Error('TMDB error');
+      return r.json();
+    })
+  );
 
+  const results = await Promise.all(requests);
+
+  // pages can overlap slightly, so remove duplicate IDs
+  const byId = new Map<number, Movie>();
+  for (const page of results) {
+    for (const m of page.results) {
+      byId.set(m.id, {
+        id: m.id,
+        title: m.title,
+        year: (m.release_date || '').slice(0, 4),
+        rating: Math.round(m.vote_average * 10) / 10,
+        poster: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
+        overview: m.overview ?? '',
+      });
+    }
+  }
+  return [...byId.values()];
+}
   private async loadFallback() {
     this.usingSample.set(true);
     if (!TMDB_API_KEY) {
@@ -56,22 +83,11 @@ export class MovieService {
       return;
     }
     try {
-      const res = await fetch(
-        `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
-      );
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      this.movies.set(
-        data.results.map((m: any) => ({
-          id: m.id,
-          title: m.title,
-          year: (m.release_date || '').slice(0, 4),
-          rating: Math.round(m.vote_average * 10) / 10,
-          poster: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
-        }))
-      );
+      this.movies.set(await this.fetchTmdb(5)); // 5 pages ≈ 100 movies
+  this.usingSample.set(true);
     } catch {
-      this.movies.set(SAMPLE);
+        this.usingSample.set(true);
+  this.movies.set(SAMPLE);
     }
   }
 }
