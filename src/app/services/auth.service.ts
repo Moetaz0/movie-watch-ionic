@@ -6,7 +6,7 @@ import {
   signOut,
   User,
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
 export interface AppUser {
@@ -106,6 +106,25 @@ export class AuthService {
   patchLocal(changes: Partial<AppUser>) {
     const u = this.currentUser();
     if (u) this.currentUser.set({ ...u, ...changes });
+  }
+
+  async listUsers(): Promise<AppUser[]> {
+    const snap = await getDocs(collection(db, 'users'));
+    return snap.docs.map((user) => {
+      const data = user.data() as AppUser;
+      return { ...data, id: user.id, favoriteMovieIds: data.favoriteMovieIds ?? [] };
+    });
+  }
+
+  async deactivateUser(userId: string) {
+    if (userId === this.currentUser()?.id) {
+      throw new Error('Un administrateur ne peut pas désactiver son propre compte.');
+    }
+    await updateDoc(doc(db, 'users', userId), { active: false });
+  }
+
+  async activateUser(userId: string) {
+    await updateDoc(doc(db, 'users', userId), { active: true });
   }
 
   private async fetchProfile(uid: string): Promise<AppUser | null> {

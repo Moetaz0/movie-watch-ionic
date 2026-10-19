@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'splash', pathMatch: 'full' },
   {
@@ -57,6 +58,12 @@ export const routes: Routes = [
   canActivate: [authGuard],
   loadComponent: () =>
     import('./pages/edit-profile/edit-profile.page').then((m) => m.EditProfilePage),
+},
+{
+  path: 'admin',
+  canActivate: [authGuard, adminGuard],
+  loadComponent: () =>
+    import('./pages/admin/admin.page').then((m) => m.AdminPage),
 },
 {
   path: 'movie/:id',

@@ -1,9 +1,9 @@
-<nav class="grid grid-cols-4 pb-[env(safe-area-inset-bottom)] text-[11px] font-black uppercase tracking-widest">
+<nav class="grid grid-cols-4 pb-[env(safe-area-inset-bottom)] text-[11px] font-black uppercase tracking-widest text-[var(--fg)]">
   @for (t of tabs; track t.label) {
     <button
       type="button"
       (click)="go(t.link)"
-      class="border-t-4 py-4 text-center uppercase"
+      class="border-t-4 py-4 text-center uppercase text-[var(--fg)]"
       [class]="t.link === active() ? 'border-[var(--accent)]' : 'border-[var(--fg)] opacity-40'"
     >
       {{ t.label }}

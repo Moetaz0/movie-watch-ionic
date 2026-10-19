@@ -26,14 +26,24 @@ export class MovieService {
     this.loading.set(true);
     try {
       const snap = await getDocs(collection(db, 'movies'));
-      if (!snap.empty) {
-        this.movies.set(snap.docs.map((d) => d.data() as Movie));
+      const storedMovies = snap.docs.map((d) => d.data() as Movie);
+      if (!storedMovies.length) {
+        await this.loadFallback();
+      } else if (TMDB_API_KEY && storedMovies.length < 20) {
+        this.movies.set(storedMovies);
+        const tmdbMovies = await this.fetchTmdb();
+        this.movies.set(this.mergeMovies(tmdbMovies, storedMovies));
+        this.usingSample.set(false);
+      } else {
+        this.movies.set(storedMovies);
+        this.usingSample.set(false);
+      }
+    } catch {
+      if (this.movies().length) {
         this.usingSample.set(false);
       } else {
         await this.loadFallback();
       }
-    } catch {
-      await this.loadFallback();
     } finally {
       this.loading.set(false);
     }
@@ -48,34 +58,57 @@ export class MovieService {
     await batch.commit();
     this.usingSample.set(false);
   }
-private async fetchTmdb(pages = 5): Promise<Movie[]> {
-  const requests = Array.from({ length: pages }, (_, i) =>
-    fetch(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${i + 1}`
-    ).then((r) => {
-      if (!r.ok) throw new Error('TMDB error');
-      return r.json();
-    })
-  );
 
-  const results = await Promise.all(requests);
-
-  // pages can overlap slightly, so remove duplicate IDs
-  const byId = new Map<number, Movie>();
-  for (const page of results) {
-    for (const m of page.results) {
-      byId.set(m.id, {
-        id: m.id,
-        title: m.title,
-        year: (m.release_date || '').slice(0, 4),
-        rating: Math.round(m.vote_average * 10) / 10,
-        poster: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
-        overview: m.overview ?? '',
-      });
+  async addMovie(movie: Omit<Movie, 'id'> & { id?: number }) {
+    const id = movie.id ?? Date.now();
+    const newMovie: Movie = { ...movie, id };
+    const updatedMovies = [
+      ...this.movies().filter((existing) => existing.id !== id),
+      newMovie,
+    ];
+    const batch = writeBatch(db);
+    for (const item of updatedMovies) {
+      batch.set(doc(db, 'movies', String(item.id)), item);
     }
+    await batch.commit();
+    this.movies.set(updatedMovies);
+    this.usingSample.set(false);
   }
-  return [...byId.values()];
-}
+  private async fetchTmdb(pages = 5): Promise<Movie[]> {
+    const requests = Array.from({ length: pages }, (_, i) =>
+      fetch(
+        `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${i + 1}`
+      ).then((r) => {
+        if (!r.ok) throw new Error('TMDB error');
+        return r.json();
+      })
+    );
+
+    const results = await Promise.all(requests);
+
+    const byId = new Map<number, Movie>();
+    for (const page of results) {
+      for (const m of page.results) {
+        byId.set(m.id, {
+          id: m.id,
+          title: m.title,
+          year: (m.release_date || '').slice(0, 4),
+          rating: Math.round(m.vote_average * 10) / 10,
+          poster: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
+          overview: m.overview ?? '',
+        });
+      }
+    }
+    return [...byId.values()];
+  }
+
+  private mergeMovies(baseMovies: Movie[], overrides: Movie[]) {
+    const byId = new Map(baseMovies.map((movie) => [movie.id, movie]));
+    for (const movie of overrides) {
+      byId.set(movie.id, movie);
+    }
+    return [...byId.values()];
+  }
   private async loadFallback() {
     this.usingSample.set(true);
     if (!TMDB_API_KEY) {
@@ -84,10 +117,10 @@ private async fetchTmdb(pages = 5): Promise<Movie[]> {
     }
     try {
       this.movies.set(await this.fetchTmdb(5)); // 5 pages ≈ 100 movies
-  this.usingSample.set(true);
+      this.usingSample.set(true);
     } catch {
-        this.usingSample.set(true);
-  this.movies.set(SAMPLE);
+      this.usingSample.set(true);
+      this.movies.set(SAMPLE);
     }
   }
 }

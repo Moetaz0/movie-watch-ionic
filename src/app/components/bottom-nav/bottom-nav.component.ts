@@ -5,7 +5,9 @@ import { NavController } from '@ionic/angular';
   selector: 'app-bottom-nav',
   standalone: true,
   templateUrl: './bottom-nav.component.html',
-  host: { class: 'absolute inset-x-0 bottom-0 z-10 block bg-[var(--bg)]' },
+  host: {
+    class: 'fixed inset-x-0 bottom-0 z-50 block bg-[var(--bg)]',
+  },
 })
 export class BottomNavComponent {
   active = input('/home');

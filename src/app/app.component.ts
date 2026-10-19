@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { ThemeService } from './services/theme.service';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +9,9 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class AppComponent {
-  constructor() {}
+  private theme = inject(ThemeService);
+
+  constructor() {
+    this.theme.init();
+  }
 }

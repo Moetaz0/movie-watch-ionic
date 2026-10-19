@@ -46,6 +46,13 @@
   <ion-icon name="chevron-forward-sharp" class="text-xl"></ion-icon>
 </a>
 
+        @if (auth.currentUser()?.role === 'admin') {
+          <a routerLink="/admin" class="flex items-center justify-between border-t-2 border-[var(--fg)] py-4">
+            <span class="text-lg font-black uppercase tracking-tight">Administration</span>
+            <ion-icon name="chevron-forward-sharp" class="text-xl"></ion-icon>
+          </a>
+        }
+
         <!-- 01 Preferences -->
         <h3 class="relative mt-12 text-[11px] font-black uppercase tracking-[0.2em]">01 — Préférences</h3>
         <section class="relative mt-2 border-b-2 border-[var(--fg)]">
